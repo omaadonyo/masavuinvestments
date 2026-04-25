@@ -181,7 +181,7 @@
 <!-- HEADER -->
 <div class="header">
 
-    <img src="{{ public_path('/mic.jpg') }}" class="logo">
+    <!-- <img src="{{ public_path('/mic.jpg') }}" class="logo"> -->
 
     <div class="company">
         <h3>Masavu Investment Club</h3>
@@ -253,7 +253,7 @@
                 <td  style="width:40px;" class="right">{{ number_format($txn->management_fees, 0) }}</td>
                 <td  style="width:30px;"class="right">{{ number_format($txn->return_fee, 0) }}</td>
 
-                <td class="center">{{ $txn->payment_proof ? '✔' : '—' }}</td>
+                <td class="center">{{ $txn->payment_proof ? 'Yes' : 'No' }}</td>
                 <td  style="width:50px;"class="status center">{{ $txn->status }}</td>
                 <td  style="width:50px;">{{ $txn->approver->name ?? '-' }}</td>
                 <td style="width:50px;">{{ $txn->reviewer->name ?? '-' }}</td>

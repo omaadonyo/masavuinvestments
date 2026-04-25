@@ -27,6 +27,13 @@ class MicAccountsTable
                     ->label('Management Fees')
                     ->money('ugx')
                     ->sortable(),
+
+                TextColumn::make('subscription_fee')
+                    ->label('Subscription Fees')
+                    ->money('ugx')
+                    ->sortable(),
+
+                      
                 TextColumn::make('withdraw_charges')
                     ->label('Charge Fees')
                     ->money('ugx')

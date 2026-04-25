@@ -14,13 +14,15 @@ class Contribution extends Model
         'reference',
         'amount',
         'managment_fee',
+        'management_fee',
         'return_fee',
         'total_deposit',
         'payment_proof',
         'notes',
-        'status', 
+        'status', 'month',
         'approved_by',
-        'initial_investment'
+        'initial_investment',
+        'subscription_fee'
     ];
 
     public function user()

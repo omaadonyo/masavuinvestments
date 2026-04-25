@@ -58,15 +58,15 @@ class UserForm
                         
                     Select::make('status')
                         ->options([
-                            'Active' => 'Active',
-                            'Suspended' => 'Suspended',
-                            'Banned' => 'Banned',
-                            'In-active' => 'In active',
+                            'active' => 'Active',
+                            'suspended' => 'Suspended',
+                            'banned' => 'Banned',
+                            'in-active' => 'In active',
                         ])
                         ->native(false)
                         ->required(),
                 
-                    Toggle::make('is_admin')->required(),
+                    Toggle::make('is_admin'),
                     Toggle::make('acknowledgment_on_tos')->required()->label('Have read all the above documents.'),
 
                 ]), 

@@ -9,7 +9,7 @@
         .portfolio-card {
             background: white;
             border-radius: 1.5rem;
-            padding: 2rem;
+            padding: 1rem;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
             border: 4px solid #ffb900;
             position: relative;
@@ -34,7 +34,7 @@
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.25rem;
         }
 
         .portfolio-icon {
@@ -58,7 +58,7 @@
         }
 
         .portfolio-item {
-            margin-bottom: 1rem;
+            margin-bottom: -12px;
         }
 
         .portfolio-item-header {
@@ -98,10 +98,130 @@
 </style>
 
 @php
-    
+
+
+$years = [2024, 2025, 2026];
+
+$targetsSummary = [];
+
+$annualTargetPerMember = 1200000;
+
+foreach ($years as $year) {
+
+    $targets = \App\Models\Target::whereYear('starts_on', $year)->get();
+
+    $members = $targets->count();
+
+    $expectedTotal = $members * $annualTargetPerMember;
+
+    $actualTotal = $targets->sum('target_scores');
+
+    $performance = $expectedTotal > 0
+        ? ($actualTotal / $expectedTotal) * 100
+        : 0;
+
+    $targetsSummary[$year] = [
+        'members' => $members,
+        'expected_total' => $expectedTotal,
+        'actual_total' => $actualTotal,
+        'performance' => round($performance, 2),
+    ];
+}
+  
     $targets = \App\Models\Target::all();
 
 @endphp
+
+
+
+<div style="display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    position: sticky;
+    top: 1rem;
+    z-index: 9999;
+    backdrop-filter: blur(9px);
+    box-shadow: 0px 9px 12px #00000036;
+    border-radius: 23px;">
+
+@foreach($targetsSummary as $year => $data)
+
+    @php
+        $percent = min($data['performance'], 100);
+
+        $color = $percent >= 75 ? '#16a34a' : ($percent >= 50 ? '#f59e0b' : '#ef4444');
+    @endphp
+
+    <div style="
+        background: #ef444412;
+        border-radius: 16px;
+        padding: 16px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        border-left: 17px solid {{ $color }};
+        font-family: Arial, sans-serif;
+    ">
+
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 style="margin:0; font-size:18px; font-weight:bold;">
+                {{ $year }}
+            </h2>
+
+            <span style="
+                font-size:12px;
+                padding:4px 10px;
+                background: {{ $color }};
+                color:white;
+                border-radius:999px;
+            ">
+                {{ $data['members'] }} Members
+            </span>
+        </div>
+
+        <div style="margin-top:10px;">
+            <p style="margin:0; font-size:12px; color:#6b7280;">
+                Club Performance
+            </p>
+
+            <p style="margin:0; font-size:26px; font-weight:bold; color:{{ $color }};">
+                {{ $data['performance'] }}%
+            </p>
+        </div>
+
+        <div style="margin-top:12px; font-size:13px;">
+            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                <span>Expected</span>
+                <b>UGX {{ number_format($data['expected_total']) }}</b>
+            </div>
+
+            <div style="display:flex; justify-content:space-between;">
+                <span>Actual</span>
+                <b>UGX {{ number_format($data['actual_total']) }}</b>
+            </div>
+        </div>
+
+        {{-- Progress bar --}}
+        <div style="
+            margin-top:12px;
+            width:100%;
+            height:8px;
+            background:#e5e7eb;
+            border-radius:999px;
+            overflow:hidden;
+        ">
+            <div style="
+                width: {{ $percent }}%;
+                height:100%;
+                background: {{ $color }};
+            "></div>
+        </div>
+
+    </div>
+
+@endforeach
+
+</div>
+
+  
 
 
                 @if( count($targets) > 0 )
@@ -112,17 +232,23 @@
                             <div class="portfolio-card">
                                 <div class="portfolio-header">
                                     <div class="portfolio-icon">
+
+                                      @if($target->user?->avatar_url )
+                                               <img src="https://masavuinvestments.com/storage/{{ $target->user->avatar_url }}">
+                                      @else
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
                                             <polyline points="16 7 22 7 22 13"></polyline>
                                         </svg>
+                                      @endif
+                                        
                                     </div>
                                     <div>
                                         @php
                                             $contribution = \App\Models\Contribution::where(['target_id' => $target->id,  'user_id' => $target->user_id, 'status' => 'approved'])->sum('total_deposit');
                                         @endphp
 
-                                        <p class="portfolio-label">{{ $target->user->name }}'s Milestone</p>
+                                        <p class="portfolio-label">{{ $target->user->name ?? 'N/A' }}'s Milestone</p>
                                         <p class="portfolio-value">UGX {{ number_format($target->target_scores) }}</p>
                                     </div>
                                 </div>
@@ -130,30 +256,24 @@
                                 <div class="portfolio-item">
                                     <div class="portfolio-item-header">
                                         <span class="text-muted">{{ $target->title }}</span>
-                                        <div style="display: flex;flex-direction: column;align-items: flex-end;">
+                                      <p class="portfolio-label">Started On: <b> {{ \Carbon\Carbon::parse($target->starts_on)->format('M j, Y') }}</b> 
+                                      Ends On: <b> {{ \Carbon\Carbon::parse($target->ends_on)->format('M j, Y') }} </b> </p>
+                                        <div style="">
                                             <span class="font-semibold">
 
-                                                {{ round((($target->target_scores/$target->final_target) * 100), 2) }}%
+                                                {{ round((( $target->target_scores / $target->final_target) * 100), 1) }}%
 
                                             </span>
                                             <b class="font-semibold">{{ number_format($target->final_target).' UGX' }}</b>
                                         </div>
                                     </div>
                                     <div class="progress-bar">
-                                        <div class="progress-fill progress-fill--amber" data-width="{{ (($contribution/$target->final_target)*100) }}"></div>
+                                        <div class="progress-fill progress-fill--amber" data-width="{{ (($contribution /$target->final_target)*100) }}"></div>
                                     </div>
                                 </div>
 
 
-                                <div class="portfolio-footer">
-                                    <div>
-                                        <p class="portfolio-label">Started On: {{ $target->starts_on }} </p>
-                                    </div>
-                                    <div class="returns-badge">
-                                        
-                                        Ends On: {{ $target->ends_on }}
-                                    </div>
-                                </div>
+                             
                             </div>
                         </div>
 

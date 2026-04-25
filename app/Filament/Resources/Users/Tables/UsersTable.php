@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Users\Tables;
 
+use App\Filament\Tables\Columns\PhotoColumn;
+
 use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action;
@@ -24,6 +26,9 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
+
+use App\Mail\OneTimeMail;
+use Illuminate\Support\Facades\Mail;
 
 class UsersTable
 {
@@ -53,15 +58,15 @@ class UsersTable
                 TextColumn::make('place_of_residence')
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->searchable(),
-                ImageColumn::make('avatar_url')
+                PhotoColumn::make('avatar_url')
                     ->toggleable(false)
-                    ->label('Photo')
-                    ->circular(),
+                    ->label('Photo'),
                 TextColumn::make('name')
+                      ->description(fn (User $record) => $record->email)
                     ->searchable(),
-                TextColumn::make('email')
-                    ->label('Email address')
-                    ->searchable(),
+                // TextColumn::make('email')
+                //     ->label('Email address')
+                //     ->searchable(),
                 TextColumn::make('phone_number')
                     ->searchable(),
                 TextColumn::make('national_id_passort_number')
@@ -100,8 +105,7 @@ class UsersTable
                     ->searchable(),
                 TextColumn::make('acknowledgment_on_tos')
                     ->label('TOS')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->searchable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('application_status')
                     ->label('Onboarding')
                     ->badge(),
@@ -202,6 +206,33 @@ class UsersTable
                             fn () => print($pdf->output()),
                             'users-' . now()->format('Y-m-d_H-i-s') . '.pdf'
                         );
+                    }),
+
+
+                 BulkAction::make('oneTimeEmail')
+                    ->label('One Time Email')
+                    ->color('info')
+                    ->icon('heroicon-s-at-symbol')
+                    ->action(function (Collection $records) {
+
+                      foreach( $records as $record ){
+                        $data = [
+                          'name' => $record->name,
+                          'email' => $record->email,
+                          'password' => 'MIC123456',
+                        ];
+                        Mail::to($record->email)->send(new OneTimeMail($data));
+                      }
+
+                      // $dan = \App\Models\User::where('id', 34)->first();
+                      // $danData = [
+                      //     'name' => $dan->name,
+                      //     'email' => $dan->email,
+                      //     'password' => 'MIC123456',
+                      //   ];
+
+                      // Mail::to($dan->email)->send(new OneTimeMail($danData));
+                        
                     }),
 
 

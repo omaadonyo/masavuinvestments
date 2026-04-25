@@ -14,11 +14,15 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\TextInputColumn;
+use Filament\Actions\BulkAction;
 use Filament\Tables\Table;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 
 class AnnualReturnsTable
 {
@@ -135,6 +139,34 @@ class AnnualReturnsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+
+                    BulkAction::make('exportPdf')
+    ->label('Export PDF')
+    ->icon('heroicon-o-document-arrow-down')
+    ->action(function (Collection $records) {
+
+        $data = $records->map(function (AnnualReturn $record) {
+            return [
+                'user_id' => $record->user_id,
+                'year' => $record->year,
+                'amount' => $record->amount,
+                'notes' => $record->notes,
+                'status' => $record->status,
+            ];
+        });
+
+        $pdf = Pdf::loadView('filament.pdfs.annual-returns', [
+            'records' => $data,
+        ]);
+
+        return response()->streamDownload(
+            fn () => print($pdf->output()),
+            'annual-returns.pdf'
+        );
+    })
+    ->deselectRecordsAfterCompletion(),
+
+                                      
                     DeleteBulkAction::make(),
                 ]),
             ]);

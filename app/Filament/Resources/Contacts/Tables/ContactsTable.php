@@ -22,6 +22,9 @@ class ContactsTable
     public static function configure(Table $table): Table
     {
         return $table
+          ->defaultSort('created_at', 'desc')
+            ->striped()
+            ->emptyStateIcon('heroicon-o-bookmark')
             ->emptyStateDescription('Messages from anonymous visitors appear here.')
             ->emptyStateActions([
                 Action::make('create')

@@ -3,11 +3,9 @@
 namespace App\Filament\Resources\Users\Pages;
 
 use App\Filament\Exports\UserExporter;
-use App\Filament\Imports\UserImporter;
 use App\Filament\Resources\Users\UserResource;
 use Filament\Actions\CreateAction;
 use Filament\Actions\ExportAction;
-use Filament\Actions\ImportAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Support\Icons\Heroicon;
@@ -23,8 +21,6 @@ class ListUsers extends ListRecords
             // ImportAction::make()->importer(UserImporter::class)->icon('heroicon-s-cloud-arrow-up'),
             ExportAction::make()->exporter(UserExporter::class)->color('success')->icon('heroicon-s-cloud-arrow-down')->columnMappingColumns(4),
             CreateAction::make()->icon('heroicon-s-user-plus'),
-            ImportAction::make()->importer(UserImporter::class)
-           
         ];
     }
 

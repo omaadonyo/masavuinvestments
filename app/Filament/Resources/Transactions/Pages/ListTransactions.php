@@ -30,14 +30,14 @@ class ListTransactions extends ListRecords
                         ->with(['user', 'approver', 'reviewer'])
                         ->get();
 
-                    $pdf = Pdf::loadView('filament.pdfs.transactions', [
-                        'transactions' => $records,
-                    ])->setPaper('a4', 'landscape'); // ✅ Landscape
+    $pdf = Pdf::loadView('filament.pdfs.transactions', [
+        'transactions' => $records,
+    ])->setPaper('a4', 'landscape');
 
-                    return response()->streamDownload(
-                        fn () => print($pdf->output()),
-                        'transactions-' . now()->format('Y-m-d_H-i-s') . '.pdf'
-                    );
+    return response()->streamDownload(
+        fn () => print($pdf->output()),
+        'transactions-' . now()->format('Y-m-d_H-i-s') . '.pdf'
+    );
                 }),
         ];
     }

@@ -7,6 +7,7 @@ use App\Mail\OnboardingConfirmation;
 use App\Models\Contribution;
 use App\Models\Onboarding;
 use App\Models\Transaction;
+use Carbon\Carbon;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -23,6 +24,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Enums\RecordActionsPosition;
+use Illuminate\Support\Facades\DB;
 use Filament\Tables\Table;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Hash;
@@ -110,7 +112,7 @@ class OnboardingsTable
             ->recordActions([
                 ActionGroup::make([
 
-                    Action::make('view')
+                                  Action::make('view')
                     ->color('default')
                     ->icon('heroicon-s-eye')
                     ->modalContent(fn (Onboarding $record): View => view(
@@ -118,120 +120,120 @@ class OnboardingsTable
                         ['record' => $record],
                     ))->modalSubmitAction(false)->slideOver()->modalWidth('lg'),
 
-
                     Action::make('approve')
-                        ->requiresConfirmation()
-                        ->icon('heroicon-s-check')
-                        ->color('success')
-                        ->hidden(fn (Onboarding $record) => $record->status == 'approved')
-                        ->action(function (Onboarding $record){
-                        
-                            $record->update(['status' => 'approved']);
+    ->requiresConfirmation()
+    ->icon('heroicon-s-check')
+    ->color('success')
+    ->hidden(fn (Onboarding $record) => $record->status == 'approved')
+    ->action(function (Onboarding $record) {
 
-                            // Notification::make()->title('Approved successfully')->success()->send();
-                            // dd($record);
-                                
-                            $user = User::create([
-                                'name' => $record->full_name,
-                                'email' => $record->email_address,
-                                'full_name' =>  $record->full_name,
-                                'uuid' => Str::uuid(),
-                                'phone_number' => $record->phone,
-                                'application_status' => 'approved',
-                                'status' => 'active',
-                                'password' => Hash::make('MIC123456'),
-                                'email_verified_at' => now(),
-                                'member_account' => 0,
-                                'date_of_birth' => $record->date_of_birth,
-                                'date_of_joining' => $record->date_of_joining,
-                                'place_of_residence' => $record->place_of_residence,
-                                'email_address' => $record->email_address,
-                                'national_id_passort_number' => $record->national_id_passort_number,
-                                'source_of_income' => $record->email_addsource_of_incomeress,
-                                'highest_level_of_education' => $record->highest_level_of_education,
-                                'profession' => $record->profession,
-                                'next_of_kin_name' => $record->next_of_kin_name,
-                                'relationship_next_of_kin' => $record->relationship_next_of_kin,
-                                'contacts_next_of_kin' => $record->contacts_next_of_kin,
-                                'active_bank_account_name' => $record->active_bank_account_name,
-                                'active_bank_account_number' => $record->active_bank_account_number,
-                                'national_id_photo' => $record->national_id_photo,
-                                'current_photo' => $record->current_photo,
-                                'agree_tos' => $record->email_address,
-                                // 'initial_investment' => $record->initial_investment,
-                                'email_verified_at' => now()
-                            ]);
+        DB::transaction(function () use ($record) {
 
-                           
+            // ✅ Approve onboarding
+            $record->update(['status' => 'approved']);
 
-                            //add users balance to the account
-                            $userAccount = \App\Models\User::where('id', $user->id)->first();
-                            $userAccount->update([
-                                'member_account' => ($userAccount->member_account + ($record->initial_investment - 4000))
-                            ]);
+            // ✅ Generate member number safely
+            $lastNumber = User::max('member_number');
+            $newNumber = $lastNumber ? ((int) filter_var($lastNumber, FILTER_SANITIZE_NUMBER_INT) + 1) : 1;
 
-                            //create target and update it
-                            //update target milestone
-                            $newTarget = \App\Models\Target::create(['user_id' => $user->id, 'title' => '2026 Contribution Goal', 'final_target' => 1200000, 'starts_on' => now(), 'status' => 'ongoing']);
+            // ✅ Create user
+            $user = User::create([
+                'name' => $record->full_name,
+                'email' => $record->email_address,
+                'full_name' => $record->full_name,
+                'member_number' => 'MIC' . $newNumber,
+                'avatar_url' => $record->current_photo,
+                'uuid' => Str::uuid(),
+                'phone_number' => $record->phone_number,
+                'application_status' => 'approved',
+                'status' => 'active',
+                'password' => Hash::make('MIC123456'),
+                'email_verified_at' => now(),
+                'member_account' => $record->initial_investment,
+                'date_of_birth' => $record->date_of_birth,
+                'date_of_joining' => $record->date_of_joining,
+                'place_of_residence' => $record->place_of_residence,
+                'national_id_passort_number' => $record->national_id_passort_number,
+                'source_of_income' => $record->source_of_income,
+                'highest_level_of_education' => $record->highest_level_of_education,
+                'profession' => $record->profession,
+                'next_of_kin_name' => $record->next_of_kin_name,
+                'relationship_next_of_kin' => $record->relationship_next_of_kin,
+                'contacts_next_of_kin' => $record->contacts_next_of_kin,
+                'active_bank_account_name' => $record->active_bank_account_name,
+                'active_bank_account_number' => $record->active_bank_account_number,
+                'national_id_photo' => $record->national_id_photo,
+                'current_photo' => $record->current_photo,
+                'agree_tos' => true,
+            ]);
 
-                            $target = \App\Models\Target::where('id', $newTarget->id)->first();
-                            $target->update([
-                                'target_scores' => ($target->target_scores + ($record->initial_investment - 4000))
-                            ]);
+            // ✅ Create targets dynamically
+            $startYear = 2024;
+            $currentYear = now()->year;
 
-                            //update system account
-                            $micAccount = \App\Models\MICAccount::where('id', 1)->first();
-                            $micAccount->update([
-                                'total_contributions' => ($micAccount->total_contributions + $record->initial_investment),
-                                'managment_fees' => $micAccount->managment_fees + 4000
-                            ]);
+            for ($year = $startYear; $year <= $currentYear; $year++) {
+                \App\Models\Target::create([
+                    'user_id' => $user->id,
+                    'title' => "{$year} Contribution Goal",
+                    'final_target' => 1200000,
+                    'starts_on' => Carbon::create($year, 1, 1)->startOfDay(),
+                    'status' => $year == $currentYear ? 'ongoing' : 'complete',
+                ]);
+            }
 
-                            Notification::make()->title('Account balance credited successfully')->success()->send();
+            // ✅ Update current year target ONLY
+            $currentTarget = \App\Models\Target::where('user_id', $user->id)
+                ->whereYear('starts_on', now()->year)
+                ->first();
 
-                             //add this contribution
-                            $contribution = Contribution::create([
-                                'user_id' => $user->id,
-                                'reference' => 'TXN_CBN_'.rand(1000000, 10000000),
-                                'amount' => ($record->initial_investment - 4000),
-                                'managment_fee' => 4000,
-                                'return_fee' => 0,
-                                'total_deposit' => $record->initial_investment,
-                                'payment_proof' => null,
-                                'notes' => 'Initial Contribution',
-                                'status' => 'approved', 
-                                'approved_by' => auth()->id()
-                            ]);
+            if ($currentTarget) {
+                $currentTarget->increment('target_scores', $record->initial_investment);
+            }
 
-                            Notification::make()->title('Contribution added successfully')->success()->send();
+            // ✅ Update system account
+            $micAccount = \App\Models\MICAccount::find(1);
+            $micAccount->increment('total_contributions', $record->initial_investment);
+            $micAccount->increment('managment_fees', $record->management_fee);
+            $micAccount->increment('subscription_fee', $record->subscription_fee ?? 0);
 
+            // ✅ Create contribution
+            $contribution = Contribution::create([
+                'user_id' => $user->id,
+                'reference' => 'TXN_CBN_' . rand(1000000, 10000000),
+                'amount' => $record->initial_investment,
+                'managment_fee' => $record->management_fee,
+                'return_fee' => 0,
+                'subscription_fee' => $record->subscription_fee ?? 0,
+                'total_deposit' => $record->initial_investment,
+                'notes' => 'Initial Contribution',
+                'status' => 'approved',
+                'approved_by' => auth()->id()
+            ]);
 
-                            Transaction::create([
-                                'txn_id' => Str::uuid(),
-                                'txn_reference' => $contribution->reference,
-                                'user_id' => $contribution->user_id,
-                                'txn_type' => 'contribution',
-                                'total_deposit' => $contribution->total_deposit,
-                                'amount' => $contribution->amount,
-                                'management_fees' => $contribution->managment_fee,
-                                'status' => $contribution->status,
-                                'payment_proof' => null,
-                                'return_fee' => 0,
-                                'notes'  => $contribution->notes,
-                                'approved_by' => $contribution->approved_by,
-                                'reviewed_by' => null,
-                            ]);
+            // ✅ Transaction log
+            Transaction::create([
+                'txn_id' => Str::uuid(),
+                'txn_reference' => $contribution->reference,
+                'user_id' => $user->id,
+                'txn_type' => 'contribution',
+                'total_deposit' => $contribution->total_deposit,
+                'amount' => $contribution->amount,
+                'management_fees' => $contribution->managment_fee,
+                'subscription_fee' => $contribution->subscription_fee,
+                'status' => $contribution->status,
+                'notes' => $contribution->notes,
+                'approved_by' => $contribution->approved_by,
+            ]);
 
-                            Notification::make()->title('Transaction recorded successfully')->success()->send();
+            // ✅ Notifications
+            Notification::make()->title('Account created & funded successfully')->success()->send();
 
-                            //email client about confirmation
-                            Mail::to($user->email)->send(new OnboardingConfirmation($user));
-                            // email the client credentials amazing.chief23@gmail.com
-                            Mail::to($user->email)->send(new NewAccountCreation($user));
-                            Mail::to('amazing.chief23@gmail.com')->send(new NewAccountCreation($user));
-                            Mail::to('masavuinvestmentclub@gmail.com')->send(new NewAccountCreation($user));
+            // ✅ Emails
+            Mail::to($user->email)->send(new OnboardingConfirmation($user));
+            Mail::to($user->email)->send(new NewAccountCreation($user));
+        });
 
-
-                        }),
+    }),
                     EditAction::make(),
                     DeleteAction::make(),
                 ])

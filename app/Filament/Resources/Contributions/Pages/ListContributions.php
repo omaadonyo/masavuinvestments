@@ -32,6 +32,29 @@ class ListContributions extends ListRecords
         return [
             ExportAction::make()->exporter(ContributionExporter::class)->icon('heroicon-s-cloud-arrow-down')->columnMappingColumns(4),
             CreateAction::make()->icon('heroicon-s-plus'),
+
+          Action::make('create_targets')
+                    ->action(function (){
+
+                      foreach (\App\Models\User::all() as $user) {
+    foreach ([2024, 2025, 2026] as $year) {
+
+        \App\Models\Target::firstOrCreate([
+            'user_id' => $user->id,
+            'starts_on' => "$year-01-01",
+        ], [
+            'title' => "Target for {$year} - {$user->name}",
+            'final_target' => 1200000,
+            'target_scores' => 0,
+            'target_balance' => 0,
+            'status' => $year === now()->year ? 'ongoing' : 'complete',
+            'ends_on' => "$year-12-31",
+        ]);
+    }
+}
+                      
+                    }),
+          
             
             Action::make('export_pdf')
                 ->label('Export PDF')

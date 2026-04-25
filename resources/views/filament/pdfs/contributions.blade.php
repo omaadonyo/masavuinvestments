@@ -119,7 +119,7 @@
         }
 
         th, td {
-            border: 1px solid #6d6d6d8d;
+            border: 1px dotted #6d6d6d8d;
             padding: 4px;
             margin:-1px;
             font-size: 8.3px;
@@ -205,7 +205,11 @@
 <!-- HEADER -->
 <div class="header">
 
-    <img src="{{ public_path('/mic.jpg') }}" class="logo">
+    <!-- @php
+       $landing = \App\Models\Landing::findOrfail(1);
+    @endphp
+
+    <img src="https://admin.masavuinvestments.com/storage/{{ $landing->logo }}" class="logo" /> -->
 
     <div class="company">
         <h3>Masavu Investment Club</h3>
@@ -256,6 +260,7 @@
             <th class="col-target">Target</th>
             <th class="col-ref">Reference</th>
             <th   style="width:60px;"class="col-money right">Amount</th>
+            <th   style="width:60px;"class="col-money right">CBN Month</th>
             <th style="width:25px;" class="col-money right">Mgmt</th>
             <th   style="width:20px;"class="col-money right">Return</th>
             <th   style="width:60px;"class="col-money right">Deposit</th>
@@ -272,17 +277,22 @@
         @foreach ($contributions as $i => $c)
         <tr>
             <td  style="width:17px;" class="center">{{ $i + 1 }}</td>
-            <td style="width:50px;">{{ $c->user->name ?? '-' }}</td>
+            <td style="width:50px;">
+
+              {{ $c->user->name ?? '-' }}
+            
+            </td>
             <td>{{ $c->target->title ?? '-' }}</td>
             <td>{{ $c->reference }}</td>
 
             <td   style="width:60px;"class="right">UGX {{ number_format($c->amount, 0) }}</td>
+            <td   style="width:60px;"class="right"> {{ $c->month }}</td>
             <td   style="width:25px;"class="right">{{ number_format($c->managment_fee, 0) }}</td>
             <td   style="width:20px;"class="right">{{ number_format($c->return_fee, 0) }}</td>
             <td   style="width:60px;"class="right">{{ number_format($c->total_deposit, 0) }}</td>
             <td   style="width:50px;"class="right">{{ number_format($c->initial_investment, 0) }}</td>
 
-            <td class="center">{{ $c->payment_proof ? '✔' : '—' }}</td>
+            <td class="center">{{ $c->payment_proof ? 'Yes' : 'No' }}</td>
             <td   style="width:20px;"class="center">{{ $c->status }}</td>
             <td>{{ $c->approvedBy->name ?? '-' }}</td>
             <td style="width:80px;">{{ $c->notes ?? '-' }}</td>
@@ -299,7 +309,7 @@
             <td class="right">{{ number_format($contributions->sum('return_fee'), 0) }}</td>
             <td class="right">{{ number_format($contributions->sum('total_deposit'), 0) }}</td>
             <td class="right">{{ number_format($contributions->sum('initial_investment'), 0) }}</td>
-            <td colspan="5"></td>
+            <td colspan="6"></td>
         </tr>
     </tfoot>
 </table>

@@ -1,256 +1,212 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Advanced User Profiles</title>
+<title>Executive Member Profile</title>
 
-    <style>
-        @page {
-            size: A4 portrait;
-            margin: 14mm;
-        }
+<style>
+@page {
+    size: A4 portrait;
+    margin: 10mm;
+}
 
-        body {
-            font-family: DejaVu Sans, sans-serif;
-            font-size: 10px;
-            color: #111827;
-            position: relative;
-        }
+body {
+    font-family: DejaVu Sans, sans-serif;
+    font-size: 9px;
+    color: #111827;
+    position: relative;
+}
 
-        /* ===== WATERMARK ===== */
-        .watermark {
-            position: fixed;
-            top: 40%;
-            left: 20%;
-            font-size: 80px;
-            color: rgba(0,0,0,0.05);
-            transform: rotate(-30deg);
-            z-index: -1;
-        }
+/* PAGE WRAPPER */
+.page {
+    position: relative;
+    page-break-after: always;
+}
 
-        .page {
-            page-break-after: always;
-        }
+/* 🔥 PER-PAGE WATERMARK (DOMPDF SAFE METHOD) */
+.watermark {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-35deg);
+    font-size: 90px;
+    font-weight: bold;
+    color: #dc2626;
+    opacity: 0.08;
+    z-index: -1;
+    letter-spacing: 4px;
+}
 
-        .header {
-            display: flex;
-            align-items: center;
-            border-bottom: 2px solid #f59e0b;
-            margin-bottom: 12px;
-        }
+/* HEADER */
+.header {
+    text-align: center;
+    border-bottom: 2px solid #f59e0b;
+    padding-bottom: 5px;
+    margin-bottom: 8px;
+}
 
-        .title {
-            flex: 1;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-        }
+.title {
+    font-size: 14px;
+    font-weight: bold;
+}
 
-        .section {
-            margin-bottom: 12px;
-        }
+/* PROFILE */
+.profile-table {
+    width: 100%;
+    margin-bottom: 8px;
+    border-collapse: collapse;
+}
 
-        .section h3 {
-            font-size: 11px;
-            color: #92400e;
-            border-bottom: 1px solid #ddd;
-        }
+.photo {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border: 1px solid #ddd;
+}
 
-        .grid {
-            display: table;
-            width: 100%;
-        }
+/* KPI */
+.kpi {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+}
 
-        .row { display: table-row; }
-        .cell {
-            display: table-cell;
-            border: 1px solid #e5e7eb;
-            padding: 5px;
-        }
+.kpi td {
+    width: 33%;
+    text-align: center;
+    padding: 6px;
+    background: #f9fafb;
+    border: 1px solid #eee;
+}
 
-        .label {
-            font-weight: bold;
-            width: 35%;
-            background: #f9fafb;
-        }
+/* SECTION */
+.section-title {
+    font-size: 10px;
+    font-weight: bold;
+    margin: 6px 0 3px;
+    border-bottom: 1px solid #ddd;
+}
 
-        .photo {
-            width: 110px;
-            height: 110px;
-            object-fit: cover;
-            border: 1px solid #ddd;
-        }
+/* TABLE */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8.5px;
+    table-layout: fixed;
+}
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 9px;
-        }
+.table td {
+    border: 1px solid #e5e7eb;
+    padding: 4px;
+    word-wrap: break-word;
+}
 
-        th, td {
-            border: 1px solid #ddd;
-            padding: 4px;
-        }
+.label {
+    width: 32%;
+    background: #f9fafb;
+    font-weight: bold;
+}
 
-        thead {
-            background: #111827;
-            color: white;
-        }
-
-        .signature {
-            margin-top: 20px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .sign-box {
-            width: 30%;
-            text-align: center;
-        }
-
-        .line {
-            margin-top: 30px;
-            border-top: 1px solid #000;
-        }
-    </style>
+/* FOOTER */
+.footer {
+    text-align: center;
+    font-size: 8px;
+    margin-top: 8px;
+    color: #6b7280;
+}
+</style>
 </head>
 
 <body>
 
-<div class="watermark">CONFIDENTIAL</div>
+@foreach($onboardings as $record)
 
-@foreach ($onboardings as $record)
 <div class="page">
+
+    <!-- 🔥 WATERMARK (ONE PER PAGE, SAFE) -->
+    <div class="watermark">CONFIDENTIAL</div>
 
     <!-- HEADER -->
     <div class="header">
-        <div class="title">MEMBER OFFBOARDING REPORT</div>
+        <div class="title">MEMBER EXECUTIVE PROFILE</div>
+        <div style="font-size:9px;">{{ strtoupper($record->status) }}</div>
     </div>
+
+    @php
+        $imageUrl = $record->current_photo
+            ? 'https://masavuinvestments.com/storage/' . $record->current_photo
+            : null;
+
+        $imageData = null;
+
+        if ($imageUrl) {
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(5)->get($imageUrl);
+                if ($response->successful()) {
+                    $imageData = base64_encode($response->body());
+                }
+            } catch (\Exception $e) {}
+        }
+    @endphp
 
     <!-- PROFILE -->
-    <div style="display:flex; justify-content:space-between;">
+    <table class="profile-table">
+        <tr>
+            <td style="width:90px; vertical-align:top;">
+                @if($imageData)
+                    <img src="data:image/jpeg;base64,{{ $imageData }}" class="photo">
+                @else
+                    <img src="https://admin.masavuinvestments.com/default-user.png" class="photo">
+                @endif
+            </td>
 
-        <div>
-            @if($record->current_photo)
-                <img src="{{ public_path('/storage/'.$record->current_photo) }}" class="photo">
-            @else
-                <img src="/default-user.png" class="photo">
-            @endif
+            <td style="vertical-align:top;">
+                <b style="font-size:11px;">{{ $record->full_name }}</b><br>
+                {{ $record->email_address }}<br>
+                {{ $record->phone_number }}<br>
+                {{ $record->place_of_residence }}
+            </td>
+        </tr>
+    </table>
 
-            <p><strong>{{ $record->full_name }}</strong></p>
-        </div>
-
-        <!-- QR CODE -->
-        <div>
-            @php
-                //  \SimpleSoftwareIO\QrCode\Facades\QrCode::size(90)->generate($record->user_id . '-' . $record->full_name);      
-            @endphp
-        </div>
-
-    </div>
-
-    <!-- PERSONAL -->
-    <div class="section">
-        <h3>Personal Information</h3>
-        <div class="grid">
-            <div class="row">
-                <div class="cell label">Phone</div>
-                <div class="cell">{{ $record->phone_number }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Email</div>
-                <div class="cell">{{ $record->email_address }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Residence</div>
-                <div class="cell">{{ $record->place_of_residence }}</div>
-            </div>
-        </div>
-    </div>
+    <!-- KPI -->
+    <table class="kpi">
+        <tr>
+            <td><b>Investment</b><br>UGX {{ number_format($record->initial_investment) }}</td>
+            <td><b>Subscription</b><br>UGX {{ number_format($record->subscription_fee) }}</td>
+            <td><b>Management</b><br>UGX {{ number_format($record->management_fee) }}</td>
+        </tr>
+    </table>
 
     <!-- KYC -->
-    <div class="section">
-        <h3>KYC Details</h3>
-        <div class="grid">
-            <div class="row">
-                <div class="cell label">ID Number</div>
-                <div class="cell">{{ $record->national_id_passort_number }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Profession</div>
-                <div class="cell">{{ $record->profession }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Income</div>
-                <div class="cell">{{ $record->source_of_income }}</div>
-            </div>
-        </div>
-    </div>
+    <div class="section-title">KYC SUMMARY</div>
+    <table class="table">
+        <tr><td class="label">ID Number</td><td>{{ $record->national_id_passort_number }}</td></tr>
+        <tr><td class="label">Profession</td><td>{{ $record->profession }}</td></tr>
+        <tr><td class="label">Income</td><td>{{ $record->source_of_income }}</td></tr>
+        <tr><td class="label">Next of Kin</td><td>{{ $record->next_of_kin_name }}</td></tr>
+        <tr><td class="label">Contact</td><td>{{ $record->contacts_next_of_kin }}</td></tr>
+    </table>
 
-    <!-- ONBOARDINGS -->
-    <div class="section">
-        <h3>Onboarding History</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Notes</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($record->user->onboardings ?? [] as $onboard)
-                <tr>
-                    <td>{{ $onboard->created_at }}</td>
-                    <td>{{ $onboard->status }}</td>
-                    <td>{{ $onboard->notes }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
+    <!-- BANK -->
+    <div class="section-title">BANK DETAILS</div>
+    <table class="table">
+        <tr>
+            <td class="label">Bank</td>
+            <td>{{ $record->active_bank_account_name }}</td>
+        </tr>
+        <tr>
+            <td class="label">Account</td>
+            <td>{{ $record->active_bank_account_number }}</td>
+        </tr>
+    </table>
 
-    <!-- TRANSACTIONS -->
-    <div class="section">
-        <h3>Transaction History</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Amount</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($record->user->transactions ?? [] as $txn)
-                <tr>
-                    <td>{{ $txn->created_at }}</td>
-                    <td>{{ $txn->txn_type }}</td>
-                    <td>UGX {{ number_format($txn->amount, 0) }}</td>
-                    <td>{{ $txn->status }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    <!-- SIGNATURES -->
-    <div class="signature">
-        <div class="sign-box">
-            <div class="line"></div>
-            <small>Prepared By</small>
-        </div>
-        <div class="sign-box">
-            <div class="line"></div>
-            <small>Reviewed By</small>
-        </div>
-        <div class="sign-box">
-            <div class="line"></div>
-            <small>Approved By</small>
-        </div>
+    <!-- FOOTER -->
+    <div class="footer">
+        Confidential Document • Masavu Investments
     </div>
 
 </div>
+
 @endforeach
 
 </body>

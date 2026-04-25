@@ -15,7 +15,7 @@
 </x-filament::callout>
 
 @php
-$documents = \App\Models\Document::where('visibility', 'public')->get();
+$documents = \App\Models\Document::all();
 @endphp
 
 <div style="

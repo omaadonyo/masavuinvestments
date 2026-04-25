@@ -21,6 +21,8 @@ class AnnualReturnResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::CalendarDays;
 
+    protected static ?int $navigationSort = 10;
+
     protected static string | UnitEnum | null $navigationGroup = 'Returns';
 
     protected static ?string $recordTitleAttribute = 'year';

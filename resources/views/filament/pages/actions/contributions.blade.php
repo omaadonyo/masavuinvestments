@@ -54,12 +54,16 @@
             </p>
         </div>
 
-        <div>
-            <p style="margin: 0; font-size: 13px; color: #777;">Payment Proof</p>
+        @if($record->payment_proof)
+
+         <div>
+            <p style="margin: 0; font-size: 13px; color: #777;">Proof Of Payment</p>
             <p style="margin: 3px 0 0;">
-                <img src="{{ Storage::url($record->payment_proof) }}">
+                <img src="https://masavuinvestments.com/storage/{{ $record->payment_proof }}">
             </p>
         </div>
+
+         @endif
 
 
     </div>

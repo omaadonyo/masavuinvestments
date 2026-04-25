@@ -26,20 +26,16 @@
             color: #111827;
         }
 
+        /* HEADER */
         .header {
-            display: flex;
-            align-items: center;
             border-bottom: 2px solid #f59e0b;
-            margin-bottom: 6px;
-            padding-bottom: 4px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
         }
 
-        .logo {
-            width: 45px;
-        }
-
-        .company {
-            margin-left: 6px;
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
         }
 
         .company h3 {
@@ -54,32 +50,27 @@
         }
 
         .title {
-            flex: 1;
             text-align: left;
-        }
-
-        .title h2 {
-            margin: 0;
             font-size: 12px;
+            font-weight: bold;
         }
 
         .meta {
-            font-size: 7px;
             text-align: right;
+            font-size: 7px;
             color: #6b7280;
         }
 
+        /* TABLE */
         table {
             width: 100%;
             border-collapse: collapse;
-            table-layout: auto; /* ✅ AUTO COLUMNS */
         }
 
         th, td {
-            border: 1px solid #e5e7eb;
-            padding: 3px;
-            font-size: 7.5px;
-            text-align: left;
+            border: 1px dotted #333;
+            padding: 4px;
+            font-size: 7px;
             vertical-align: top;
             word-break: break-word;
         }
@@ -90,29 +81,28 @@
         }
 
         th {
-            text-transform: capitalize;
             font-size: 7px;
+            text-transform: uppercase;
         }
 
         tbody tr:nth-child(even) {
             background: #fffdf5;
         }
 
-        .center { text-align: left; }
-        .right { text-align: right; }
-
+        /* AVATAR */
         .avatar {
-            width: 28px;
-            height: 28px;
-            border-radius: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 3px;
             object-fit: cover;
             border: 1px solid #ddd;
         }
 
+        /* BADGE */
         .badge {
-            padding: 2px 3px;
+            padding: 2px 4px;
+            font-size: 6px;
             border-radius: 3px;
-            font-size: 6.5px;
             color: white;
         }
 
@@ -120,8 +110,17 @@
         .inactive { background: #dc2626; }
         .pending { background: #f59e0b; }
 
+        /* ICONS */
+        .ok { color: #16a34a; font-weight: bold; }
+        .warn { color: #f59e0b; font-weight: bold; }
+        .bad { color: #dc2626; font-weight: bold; }
+
+        .center { text-align: center; }
+        .right { text-align: right; }
+
+        /* FOOTER */
         .footer {
-            margin-top: 5px;
+            margin-top: 6px;
             text-align: center;
             font-size: 7px;
             color: #6b7280;
@@ -133,25 +132,30 @@
 
 <!-- HEADER -->
 <div class="header">
-    <img src="{{ public_path('/mic.jpg') }}" class="logo">
+    <table class="header-table">
+        <tr>
+            <td style="width:25%;">
+                <div class="company">
+                    <h3>Masavu Investment Club</h3>
+                    <small>
+                        Kampala, Uganda<br>
+                        +256 789 444 366<br>
+                        info@masavuinvestments.com<br>
+                      www.masavuinvestments.com<br>
+                    </small>
+                </div>
+            </td>
 
-    <div class="company">
-        <h3>Masavu Investment Club</h3>
-        <small>
-            Kampala, Uganda<br>
-            Tel: +256 789 444 366<br>
-            Email: info@masavuinvestments.com<br>
-            Website: www.masavuinvestments.com
-        </small>
-    </div>
+            <td class="title">
+                USERS REPORT
+            </td>
 
-    <div class="title">
-        <h2>USERS REPORT</h2>
-    </div>
-
-    <div class="meta">
-        Generated: {{ now()->format('Y-m-d H:i') }}
-    </div>
+            <td class="meta">
+                Generated:<br>
+                {{ now()->format('Y-m-d H:i') }}
+            </td>
+        </tr>
+    </table>
 </div>
 
 <!-- TABLE -->
@@ -160,26 +164,14 @@
         <tr>
             <th>#</th>
             <th>Photo</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            {{-- <th>UUID</th> --}}
-            <th>No</th>
-            <th>Status</th>
-            <th>Application</th>
-            <th>DOB</th>
-            <th>Joined</th>
-            <th>Residence</th>
-            <th>Profession</th>
-            <th>Income</th>
-            <th>Education</th>
-            <th>NIN</th>
+
+            <th>Identity</th>
+            <th>Contact</th>
+            <th>Profile</th>
+            <th>Compliance</th>
             <th>Next of Kin</th>
-            <th>Kin Contact</th>
-            <th>Bank Name</th>
-            <th>Bank No</th>
-            <th>Investment</th>
-            <th>Admin</th>
+            <th>Banking</th>
+            <th class="right">Investment</th>
         </tr>
     </thead>
 
@@ -187,66 +179,104 @@
         @php $totalInvestment = 0; @endphp
 
         @foreach ($users as $i => $user)
-            @php $totalInvestment += $user->initial_investment ?? 0; @endphp
 
-            <tr>
-                <td class="center">{{ $i + 1 }}</td>
+        @php
+            $totalInvestment += $user->initial_investment ?? 0;
 
-                <!-- AVATAR -->
-                <td class="center">
-                    <img 
-                        src="{{ $user->avatar_url ? public_path('/storage/'.$user->avatar_url) : public_path('default-user.png') }}" 
-                        class="avatar">
-                </td>
+            $imageUrl = $user->avatar_url
+                ? 'https://masavuinvestments.com/storage/' . $user->avatar_url
+                : null;
 
-                <td>{{ $user->full_name ?? $user->name }}</td>
-                <td>{{ $user->email }}</td>
-                {{-- <td>{{ $user->email_address ?? '-' }}</td> --}}
-                <td>{{ $user->phone_number ?? '-' }}</td>
-                {{-- <td>{{ $user->uuid }}</td> --}}
-                <td>{{ $user->member_number ?? '-' }}</td>
+            $imageData = null;
 
-                <td class="center">
-                    <span class="badge 
-                        {{ $user->status === 'active' ? 'active' : ($user->status === 'pending' ? 'pending' : 'inactive') }}">
-                        {{ strtoupper($user->status) }}
-                    </span>
-                </td>
+            if ($imageUrl) {
+                try {
+                    $response = \Illuminate\Support\Facades\Http::timeout(5)->get($imageUrl);
+                    if ($response->successful()) {
+                        $imageData = base64_encode($response->body());
+                    }
+                } catch (\Exception $e) {}
+            }
+        @endphp
 
-                <td class="center">{{ strtoupper($user->application_status ?? '-') }}</td>
+        <tr>
 
-                <td>{{ $user->date_of_birth ?? '-' }}</td>
-                <td>{{ $user->date_of_joining ?? '-' }}</td>
-                <td>{{ $user->place_of_residence ?? '-' }}</td>
-                <td>{{ $user->profession ?? '-' }}</td>
-                <td>{{ $user->source_of_income ?? '-' }}</td>
-                <td>{{ $user->highest_level_of_education ?? '-' }}</td>
-                <td>{{ $user->national_id_passort_number ?? '-' }}</td>
+            <!-- INDEX -->
+            <td class="center">{{ $i + 1 }}</td>
 
-                <td>
-                    {{ $user->next_of_kin_name ?? '-' }}<br>
-                    <small>{{ $user->relationship_next_of_kin ?? '' }}</small>
-                </td>
+            <!-- PHOTO -->
+            <td class="center">
+                @if($imageData)
+                    <img src="data:image/jpeg;base64,{{ $imageData }}" class="avatar">
+                @else
+                    <img src="https://admin.masavuinvestments.com/default-user.png" class="avatar">
+                @endif
+            </td>
 
-                <td>{{ $user->contacts_next_of_kin ?? '-' }}</td>
-                <td>{{ $user->active_bank_account_name ?? '-' }}</td>
-                <td>{{ $user->active_bank_account_number ?? '-' }}</td>
+            <!-- IDENTITY -->
+            <td>
+                <b>{{ $user->full_name }}</b><br>
+                {{ $user->member_number }}<br>
 
-                <td class="right">
-                    UGX {{ number_format($user->initial_investment ?? 0, 0) }}
-                </td>
+                @if($user->status === 'active')
+                    <span class="ok">ACTIVE</span>
+                @elseif($user->status === 'pending')
+                    <span class="warn">PENDING</span>
+                @else
+                    <span class="bad">INACTIVE</span>
+                @endif
+            </td>
 
-                <td class="center">
-                    {{ $user->is_admin ? 'YES' : 'NO' }}
-                </td>
-            </tr>
+            <!-- CONTACT -->
+            <td>
+                Email: {{ $user->email }}<br>
+                Phone Number: {{ $user->phone_number }}
+            </td>
+
+            <!-- PROFILE -->
+            <td>
+               Date of Birth: {{ $user->date_of_birth }}<br>
+               Profession: {{ $user->profession }}
+            </td>
+
+            <!-- COMPLIANCE -->
+            <td>
+                NIN: {{ $user->national_id_passort_number }}<br>
+                Onboard Status: {{ strtoupper($user->application_status) }}
+            </td>
+
+            <!-- NEXT OF KIN -->
+            <td>
+                Next of Kin: {{ $user->next_of_kin_name }}<br>
+                Contacts: {{ $user->contacts_next_of_kin }}
+            </td>
+
+            <!-- BANKING -->
+            <td>
+                Bank Account {{ $user->active_bank_account_name }}<br>
+                Account Number {{ $user->active_bank_account_number }}
+            </td>
+
+            <!-- INVESTMENT -->
+            <td class="right">
+                UGX {{ number_format($user->contributions->sum('amount') ?? 0, 0) }}
+            </td>
+
+        </tr>
+
         @endforeach
-    </tbody>
 
+        <!-- TOTAL -->
+        <!-- <tr>
+            <td colspan="8" class="right"><b>Total Investment</b></td>
+            <td class="right"><b>UGX {{ number_format($user->contributions->sum('amount'), 0) }}</b></td>
+        </tr> -->
+    </tbody>
 </table>
 
+<!-- FOOTER -->
 <div class="footer">
-    © {{ date('Y') }} Masavu Investment Club — Users Report
+    © 2024 - 2026 Masavu Investment Club — Confidential Report
 </div>
 
 </body>

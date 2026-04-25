@@ -18,8 +18,8 @@ class CreateContribution extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['user_id'] = auth()->id();
-        $data['initial_investment'] = 104000;
+
+        $data['management_fee'] = 2000;
         $data['reference'] = 'TXN_CBN_'.rand(1000000, 1000000000);
         $data['status'] = 'pending';
 
@@ -46,7 +46,7 @@ class CreateContribution extends CreateRecord
             'txn_type' => 'contribution',
             'total_deposit' => $this->record->total_deposit,
             'amount' => $this->record->amount,
-            'management_fees' => 4000,
+            'management_fees' => $this->record->management_fee,
             'status' => $this->record->status,
             'payment_proof' => null,
             'return_fee' => 0,

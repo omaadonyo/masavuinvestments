@@ -7,7 +7,7 @@
 
             <!-- AVATAR -->
             <div style="position: relative;">
-                <img src="{{ Storage::url($record->current_photo) }}"
+                <img src="https://masavuinvestments.com/storage/{{ $record->current_photo }}"
                      style="width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 4px solid #f59e0b;">
                 
                 <span style="position: absolute; bottom: 0; right: 0; background: #3b82f6; color: #fff; font-size: 10px; padding: 3px 6px; border-radius: 10px;">
@@ -99,10 +99,10 @@
             <h3 style="margin-bottom: 12px; font-size: 16px;">Documents</h3>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <img src="{{ Storage::url($record->national_id_photo) }}"
+                <img src="https://masavuinvestments.com/storage/{{ $record->national_id_photo }}"
                      style="width: 100%; height: 130px; object-fit: cover; border-radius: 8px;">
                 
-                <img src="{{ Storage::url($record->current_photo) }}"
+                <img src="https://masavuinvestments.com/storage/{{ $record->current_photo }}"
                      style="width: 100%; height: 130px; object-fit: cover; border-radius: 8px;">
             </div>
         </div>

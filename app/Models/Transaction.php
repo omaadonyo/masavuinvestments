@@ -16,6 +16,7 @@ class Transaction extends Model
         'return_fee',
         'amount',
         'management_fees',
+        'subscription_fee',
         'status',
         'notes',
         'approved_by',

@@ -90,7 +90,7 @@
 
 @php
     
-    $projects = \App\Models\project::where('active', true)->get();
+    $projects = \App\Models\project::all();
 
 @endphp
 
@@ -115,8 +115,13 @@
                             <img src="{{ Storage::url($photo) }}" alt="Real Estate Development" class="project-image">
 
                             @endforeach
-        
+
+                          @if( $project->active == true )
                             <span class="project-badge">Active Investment</span>
+                          @else
+                                   <span class="project-badge">Suspended Investment</span>
+                          @endif
+        
                         </div>
                         <div class="project-body">
                             <div>

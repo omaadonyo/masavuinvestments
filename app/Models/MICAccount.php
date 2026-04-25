@@ -14,6 +14,7 @@ class MICAccount extends Model
         'total_contributions',
         'managment_fees',
         'total_withdraw',
+        'subscription_fee',
         'withdraw_charges',
     ];
 }

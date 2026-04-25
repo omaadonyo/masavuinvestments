@@ -9,6 +9,8 @@ class TargetPerformanceChart extends ChartWidget
 {
     protected ?string $heading = 'Target Performance Overview';
 
+    protected static ?int $sort = 2;
+
     protected function getType(): string
     {
         return 'bar';
@@ -19,7 +21,7 @@ class TargetPerformanceChart extends ChartWidget
         $userId = auth()->id();
 
         $data = DB::table('targets')
-            ->where('user_id', 35)
+            // ->where('user_id', 35)
             ->select(
                 DB::raw('YEAR(starts_on) as year'),
                 DB::raw('SUM(final_target) as target'),

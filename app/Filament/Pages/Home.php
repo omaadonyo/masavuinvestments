@@ -22,4 +22,5 @@ class Home extends Page
     {
         return 'filament-panels::components.layout.home';
     }
+
 }

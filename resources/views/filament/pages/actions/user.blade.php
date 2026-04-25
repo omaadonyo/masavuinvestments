@@ -14,7 +14,8 @@
         align-items: center;
         gap: 20px;
     ">
-        <img src="{{ Storage::url($record->avatar_url) ?? 'https://ui-avatars.com/api/?name=' . urlencode($record->full_name) }}"
+      @if( $record->avatar_url )
+<img src="https://masavuinvestments.com/storage/{{ $record->avatar_url }}"
              style="
                 width: 90px;
                 height: 90px;
@@ -22,6 +23,19 @@
                 border: 3px solid #fff;
                 object-fit: cover;
              ">
+      @else
+
+      <img src="https://masavuinvestments.com/default-user.png"
+             style="
+                width: 90px;
+                height: 90px;
+                border-radius: 50%;
+                border: 3px solid #fff;
+                object-fit: cover;
+             ">
+
+      @endif
+        
 
         <div>
             <h2 style="margin: 0; font-size: 24px;">
@@ -104,12 +118,17 @@
                 <strong>Documents:</strong><br>
 
                 @if($record->national_id_photo)
-                    <img src="{{ Storage::url($record->national_id_photo) }}"  style="color:#1d4ed8;" />
+                    <iframe 
+    src="{{ $record->national_id_photo 
+        ? 'https://masavuinvestments.com/storage/'.$record->national_id_photo 
+        : 'https://masavuinvestments.com/default-user.png' }}" 
+    style="border:none; width:100%; height:600px;">
+</iframe>
                 @endif
 
                 @if($record->current_photo)
                     <br>
-                    <img src="{{ Storage::url($record->current_photo) }}" style="color:#1d4ed8;" />
+                    <img src="https://masavuinvestments.com{{ '/storage/'.$record->current_photo ?? 'https://masavuinvestments.com/default-user.png' }}" style="color:#1d4ed8;" />
                 @endif
             </div>
         </div>

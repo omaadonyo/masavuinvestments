@@ -42,21 +42,30 @@ class TransactionsTable
                         'contribution' => 'success',
                         'withdrawal' => 'danger',
                         'withdraw' => 'danger',
+                        'annual returns' => 'primary',
                     })
                     ->icon(fn (string $state): Heroicon => match ($state) {
                         'contribution' => Heroicon::PlusCircle,
                         'withdrawal' => Heroicon::MinusCircle,
                         'withdraw' => Heroicon::MinusCircle,
+                        'annual returns' => Heroicon::MinusCircle,
                     })
                     ->searchable(),
                 
                 TextColumn::make('amount')
                     ->money('Ugx')
                     ->sortable(),
+                      
                 TextColumn::make('management_fees')
                     ->money('Ugx')
                     ->label('Mgt Fees')
                     ->sortable(),
+
+                TextColumn::make('subscription_fee')
+                    ->money('Ugx')
+                    ->label('Subscription Fees')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('total_deposit')
                     ->label('Total')

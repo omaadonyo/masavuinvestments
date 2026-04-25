@@ -1,28 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>User Profiles Report</title>
+    <title>User Profile Report</title>
 
     <style>
         @page {
             size: A4 portrait;
-            margin: 15mm;
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            src: url('{{ public_path("fonts/Inter-Regular.ttf") }}') format('truetype');
-        }
-
-        @font-face {
-            font-family: 'Inter';
-            src: url('{{ public_path("fonts/Inter-Bold.ttf") }}') format('truetype');
-            font-weight: bold;
+            margin: 10mm;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            font-size: 10px;
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 8px;
             color: #111827;
         }
 
@@ -30,102 +19,119 @@
             page-break-after: always;
         }
 
+        /* HEADER */
         .header {
-            display: flex;
-            align-items: center;
-            border-bottom: 2px solid #f59e0b;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-        }
-
-        .logo {
-            width: 50px;
-        }
-
-        .title {
-            flex: 1;
-            text-align: center;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .section {
-            margin-bottom: 12px;
-        }
-
-        .section h3 {
-            margin-bottom: 5px;
-            font-size: 11px;
-            color: #92400e;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 2px;
-        }
-
-        .grid {
-            display: table;
-            width: 100%;
-        }
-
-        .row {
-            display: table-row;
-        }
-
-        .cell {
-            display: table-cell;
-            padding: 4px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .label {
-            font-weight: bold;
-            width: 30%;
-            background: #f9fafb;
-        }
-
-        .avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 6px;
-            object-fit: cover;
-            border: 1px solid #ddd;
-        }
-
-        .status {
-            padding: 3px 6px;
-            font-size: 9px;
-            color: white;
-            border-radius: 4px;
-        }
-
-        
-        .logo {
-            width: 50px;
-        }
-
-        .company {
-            margin-left: 8px;
+            padding: 6px;
+            margin-bottom: 6px;
+            border-left: 4px solid #f59e0b;
+            background: #fff7ed;
         }
 
         .company h3 {
             margin: 0;
-            font-size: 13px;
+            font-size: 11px;
             color: #92400e;
         }
 
         .company small {
-            font-size: 8px;
+            font-size: 7px;
             color: #6b7280;
         }
 
-        .active { background: #16a34a; }
+        .meta {
+            text-align: right;
+            font-size: 7px;
+            color: #6b7280;
+        }
+
+        /* TITLE BAR */
+        .title-bar {
+            background: #f59e0b;
+            color: white;
+            padding: 6px;
+            font-weight: bold;
+            font-size: 10px;
+            margin-bottom: 6px;
+        }
+
+        /* BADGES */
+        .badge {
+            padding: 2px 5px;
+            font-size: 7px;
+            color: white;
+            border-radius: 3px;
+            background: #16a34a;
+        }
+
         .pending { background: #f59e0b; }
         .inactive { background: #dc2626; }
 
+        /* TABLES */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 8px;
+        }
+
+        td {
+            border: 1px solid #fde68a;
+            padding: 4px;
+            vertical-align: top;
+        }
+
+        .label {
+            width: 30%;
+            background: #fffbeb;
+            font-weight: bold;
+            color: #92400e;
+        }
+
+        /* PHOTO */
+        .photo {
+            width: 65px;
+            height: 65px;
+            border: 2px solid #f59e0b;
+        }
+
+        /* SECTION TITLE */
+        .section-title {
+            font-size: 9px;
+            font-weight: bold;
+            margin: 8px 0 4px;
+            padding: 3px;
+            background: #fff7ed;
+            border-left: 3px solid #f59e0b;
+            color: #92400e;
+        }
+
+        /* SMALL TEXT */
+        .small {
+            font-size: 7px;
+        }
+
+        /* FOOTER */
         .footer {
             margin-top: 10px;
             text-align: center;
-            font-size: 9px;
+            font-size: 7px;
             color: #6b7280;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        /* INVESTMENT HIGHLIGHT */
+        .investment-box {
+            background: #fffbeb;
+            border: 1px solid #f59e0b;
+            padding: 4px;
+            font-weight: bold;
+            color: #92400e;
         }
     </style>
 </head>
@@ -133,141 +139,124 @@
 <body>
 
 @foreach ($users as $user)
+
 <div class="page">
 
     <!-- HEADER -->
     <div class="header">
-        <img src="{{ public_path('/mic.jpg') }}" class="logo">
-        <div class="company">
-        <h3>Masavu Investment Club</h3>
-        <small>
-            Kampala, Uganda<br>
-            Tel: +256 789 444 366<br>
-            Email: info@masavuinvestments.com<br>
-            Website: www.masavuinvestments.com
-        </small>
-    </div>
-        <div class="title">USER PROFILE REPORT</div>
-    </div>
+        <table width="100%">
+            <tr>
+                <td>
+                    <div class="company">
+                        <h3>Masavu Investment Club</h3>
+                        <small>
+                            Kampala, Uganda<br>
+                            +256 789 444 366<br>
+                            info@masavuinvestments.com <br>
+                            www.masavuinvestments.com <br>
+                        </small>
+                    </div>
+                </td>
 
-    <!-- PROFILE HEADER -->
-    <div class="section" style="display:flex; gap:15px; align-items:center;">
-        <div>
-            <img src="{{ $user->avatar_url ? public_path('/storage/'.$user->avatar_url) : public_path('default-user.png') }}" class="avatar">
-        </div>
-
-        <div>
-            <h2 style="margin:0;">{{ $user->full_name ?? $user->name }}</h2>
-            <p style="margin:2px 0;">Member #: {{ $user->member_number ?? '-' }}</p>
-
-            <span class="status 
-                {{ $user->status === 'active' ? 'active' : ($user->status === 'pending' ? 'pending' : 'inactive') }}">
-                {{ strtoupper($user->status) }}
-            </span>
-        </div>
+                <td class="meta">
+                    Generated:<br>
+                    {{ now()->format('Y-m-d H:i') }}
+                </td>
+            </tr>
+        </table>
     </div>
 
-    <!-- PERSONAL INFO -->
-    <div class="section">
-        <h3>Personal Information</h3>
-        <div class="grid">
-            <div class="row">
-                <div class="cell label">Email</div>
-                <div class="cell">{{ $user->email }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Phone</div>
-                <div class="cell">{{ $user->phone_number }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Date of Birth</div>
-                <div class="cell">{{ $user->date_of_birth }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Residence</div>
-                <div class="cell">{{ $user->place_of_residence }}</div>
-            </div>
-        </div>
+    <!-- TITLE -->
+    <div class="title-bar">
+        USER PROFILE REPORT
+        <span style="float:right;">
+            @if($user->status === 'active')
+                ACTIVE
+            @elseif($user->status === 'pending')
+                PENDING
+            @else
+                INACTIVE
+            @endif
+        </span>
     </div>
 
-    <!-- KYC SECTION -->
-    <div class="section">
-        <h3>KYC & Identity</h3>
-        <div class="grid">
-            <div class="row">
-                <div class="cell label">National ID / Passport</div>
-                <div class="cell">{{ $user->national_id_passort_number }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Source of Income</div>
-                <div class="cell">{{ number_format($user->source_of_income) }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Education</div>
-                <div class="cell">{{ $user->highest_level_of_education }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Profession</div>
-                <div class="cell">{{ $user->profession }}</div>
-            </div>
-        </div>
-    </div>
+    <!-- TOP -->
+    <table>
+        <tr>
+
+            <td class="center" style="width:80px;">
+                @php
+                    $imageUrl = $user->avatar_url ? 'https://masavuinvestments.com/storage/' . $user->avatar_url : 'https://admin.masavuinvestments.com/default-user.png';
+                @endphp
+
+                <img src="{{ $imageUrl }}" class="photo">
+            </td>
+
+            <td>
+                <b style="color:#92400e;">{{ $user->full_name }}</b><br>
+                {{ $user->member_number }}<br>
+                {{ $user->email }}<br>
+                {{ $user->phone_number }}
+            </td>
+
+            <td class="right">
+                <div class="investment-box">
+                    TOTAL INVESTMENT<br>
+                    UGX {{ number_format($user->contributions->sum('amount') ?? 0, 0) }}
+                </div>
+            </td>
+
+        </tr>
+    </table>
+
+    <!-- PERSONAL -->
+    <div class="section-title">PERSONAL INFORMATION</div>
+    <table>
+        <tr><td class="label">Date of Birth</td><td>{{ $user->date_of_birth }}</td></tr>
+        <tr><td class="label">Date Joined</td><td>{{ $user->date_of_joining }}</td></tr>
+        <tr><td class="label">Residence</td><td>{{ $user->place_of_residence }}</td></tr>
+        <tr><td class="label">Profession</td><td>{{ $user->profession }}</td></tr>
+        <tr><td class="label">Income Source</td><td>{{ $user->source_of_income }}</td></tr>
+        <tr><td class="label">Education</td><td>{{ $user->highest_level_of_education }}</td></tr>
+    </table>
+
+    <!-- KYC -->
+    <div class="section-title">KYC INFORMATION</div>
+    <table>
+        <tr><td class="label">NIN</td><td>{{ $user->national_id_passort_number }}</td></tr>
+        <tr><td class="label">Application Status</td><td>{{ strtoupper($user->application_status) }}</td></tr>
+    </table>
 
     <!-- NEXT OF KIN -->
-    <div class="section">
-        <h3>Next of Kin</h3>
-        <div class="grid">
-            <div class="row">
-                <div class="cell label">Name</div>
-                <div class="cell">{{ $user->next_of_kin_name }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Relationship</div>
-                <div class="cell">{{ $user->relationship_next_of_kin }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Contacts</div>
-                <div class="cell">{{ $user->contacts_next_of_kin }}</div>
-            </div>
-        </div>
-    </div>
+    <div class="section-title">NEXT OF KIN</div>
+    <table>
+        <tr><td class="label">Name</td><td>{{ $user->next_of_kin_name }}</td></tr>
+        <tr><td class="label">Relationship</td><td>{{ $user->relationship_next_of_kin }}</td></tr>
+        <tr><td class="label">Contact</td><td>{{ $user->contacts_next_of_kin }}</td></tr>
+    </table>
 
-    <!-- BANK INFO -->
-    <div class="section">
-        <h3>Bank Details</h3>
-        <div class="grid">
-            <div class="row">
-                <div class="cell label">Account Name</div>
-                <div class="cell">{{ $user->active_bank_account_name }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Account Number</div>
-                <div class="cell">{{ $user->active_bank_account_number }}</div>
-            </div>
-        </div>
-    </div>
+    <!-- BANKING -->
+    <div class="section-title">BANKING DETAILS</div>
+    <table>
+        <tr><td class="label">Bank</td><td>{{ $user->active_bank_account_name }}</td></tr>
+        <tr><td class="label">Account No</td><td>{{ $user->active_bank_account_number }}</td></tr>
+    </table>
 
-    <!-- INVESTMENT -->
-    <div class="section">
-        <h3>Investment</h3>
-        <div class="grid">
-            <div class="row">
-                <div class="cell label">Initial Investment</div>
-                <div class="cell">UGX {{ number_format($user->initial_investment ?? 0, 0) }}</div>
-            </div>
-            <div class="row">
-                <div class="cell label">Date Joined</div>
-                <div class="cell">{{ $user->date_of_joining }}</div>
-            </div>
-        </div>
-    </div>
+    <!-- FEES -->
+    <div class="section-title">INVESTMENT BREAKDOWN</div>
+    <table>
+        <tr><td class="label">Initial Investment</td><td>UGX {{ number_format($user->contributions()->oldest()->value('amount') ?? 0, 0) }}</td></tr>
+        <tr><td class="label">Subscription Fee</td><td>UGX {{ number_format($user->subscription_fee ?? 0, 0) }}</td></tr>
+     
+    </table>
 
     <!-- FOOTER -->
     <div class="footer">
-        © {{ date('Y') }} Masavu Investment Club — Confidential Profile
+        © {{ date('Y') }} Masavu Investment Club — Confidential Report
     </div>
 
 </div>
+
 @endforeach
 
 </body>

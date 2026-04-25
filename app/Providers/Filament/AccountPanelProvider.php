@@ -24,27 +24,28 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\NavigationItem;
 
 class AccountPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
-        // $landing = \App\Models\Landing::find(1);
+        $landing = \App\Models\Landing::find(1);
 
         return $panel
             ->default()
-            ->id('account')
-            ->path('account')
+            ->id('admin')
+            ->path('admin')
             ->login()
-            ->registration()
+            // ->registration()
             ->topbar(false)
             ->passwordReset()
             ->emailVerification()
             ->darkMode(true)
             ->profile(EditProfile::class)
-            // ->brandName($landing->brandname ?? 'MIC' )
-            // ->brandLogo('/storage/'.$landing->logo ?? '/mic.jpg')
-            // ->favicon('/storage/'.$landing->favicon ?? '/mic.jpg')
+            ->brandName($landing->brandname ?? 'MIC' )
+            ->brandLogo('/storage/'.$landing->logo ?? '/mic.jpg')
+            ->favicon('/storage/'.$landing->favicon ?? '/mic.jpg')
             ->brandLogoHeight('3.5rem')
             ->emailChangeVerification()
             ->sidebarCollapsibleOnDesktop()
@@ -59,14 +60,14 @@ class AccountPanelProvider extends PanelProvider
                     MobileBottomNavItem::make('Home')
                         ->icon('heroicon-o-home')
                         ->activeIcon('heroicon-s-home')
-                        ->url('/account')
+                        ->url('/admin')
                         ->isActive(fn () => request()->is('account')),
                     MobileBottomNavItem::make('Contribution')
                         ->icon('heroicon-o-plus')
-                        ->url('/account/contributions/create'),
+                        ->url('/admin/contributions/create'),
                     MobileBottomNavItem::make('Profile')
                         ->icon('heroicon-o-user')
-                        ->url('/account/profile'),
+                        ->url('/admin/profile'),
                 ]),
             ])
             ->multiFactorAuthentication([
@@ -74,7 +75,7 @@ class AccountPanelProvider extends PanelProvider
             ])
             ->userMenuItems([
                 Action::make('Dashboard')
-                    ->url('/account')
+                    ->url('/admin')
                     ->icon('heroicon-s-computer-desktop'),
                 // ...
             ])
